@@ -104,6 +104,7 @@ lark-cli drive +add-comment \
 - 全文评论支持 `docx`、旧版 `doc` URL，以及最终可解析为 `doc`/`docx` 的 wiki URL。
 - 传 `--selection-with-ellipsis` 或 `--block-id` 时，shortcut 创建**局部评论（划词评论）**；该模式仅支持 `docx`，以及最终可解析为 `docx` 的 wiki URL。
 - `--content` 接收结构化评论元素数组；`type` 支持 `text`、`mention_user`、`link`。为便于书写，`mention_user` / `link` 元素可以直接把用户 ID 或链接地址放在 `text` 字段中，shortcut 会转换成 OpenAPI 所需字段。
+- **单个 `text` 元素长度上限 ~300 字节**（约 100 个中文字符 / 300 个 ASCII 字符）。超过后服务端返回不透明的 `[1069302] Invalid or missing parameters`，shortcut 会在发送前 pre-flight 拦截，明确指出是第几个元素超长。**正确做法是把长文本拆成多个 `{"type":"text","text":"..."}` 元素**——UI 仍显示为同一条连续评论，不会被拆散。
 - 局部评论走 `locate-doc` 时，内部固定使用 `limit=10`。
 - 当 `locate-doc` 命中多处时，shortcut 会中止并提示用户继续收窄 `--selection-with-ellipsis`，不支持手动指定匹配序号。
 - 写入评论前会自动生成符合 OpenAPI 定义的请求体：
